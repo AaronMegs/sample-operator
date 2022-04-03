@@ -1,0 +1,50 @@
+package v1alpha1
+
+import (
+	"github.com/aaronmegs/sample-operator/pkg/apis/samplecrd"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+)
+
+// SchemeGroupVersion is group version used to registry these objects
+var SchemeGroupVersion = schema.GroupVersion{
+	Group:   samplecrd.GroupName,
+	Version: samplecrd.Version,
+}
+
+// create a SchemeBuilder which uses functions to add types to
+// the scheme
+var (
+	// SchemeBuilder initializes a scheme builder
+	SchemeBuilder = runtime.NewSchemeBuilder(addKnownTypes)
+	// AddToScheme is a global function that registers this API group & version to scheme
+	AddToScheme = SchemeBuilder.AddToScheme
+)
+
+// Resource takes an unqualified resource and returns a Group qualified GroupResource
+func Resource(resource string) schema.GroupResource {
+	return SchemeGroupVersion.WithResource(resource).GroupResource()
+}
+
+// Kind takes an unqualified kind and returns back a Group qualified GroupKind
+func Kind(kind string) schema.GroupKind {
+	return SchemeGroupVersion.WithKind(kind).GroupKind()
+}
+
+// Adds the list of know types to Scheme
+// addKnownTypes adds our types to the API scheme by registering
+// Foo and FooList
+// Network and NetworkList
+func addKnownTypes(scheme *runtime.Scheme) error {
+	scheme.AddKnownTypes(
+		SchemeGroupVersion,
+		&Foo{},
+		&FooList{},
+		&Network{},
+		&NetworkList{},
+	)
+	// register the type in the scheme
+	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
+	return nil
+}
